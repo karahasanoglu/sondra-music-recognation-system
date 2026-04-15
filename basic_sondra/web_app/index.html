@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sondra Mic App</title>
+    <style>
+      :root {
+        --ink: #1f1a18;
+        --paper: #fffaf5;
+        --warm: #f2d1b5;
+        --sun: #e9683f;
+        --leaf: #106c61;
+        --soft: #f8eee5;
+        --danger: #b42318;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(233, 104, 63, 0.18), transparent 34%),
+          radial-gradient(circle at bottom right, rgba(16, 108, 97, 0.18), transparent 26%),
+          linear-gradient(145deg, #f7e4d1, #fdf6ef 45%, #edf7f4);
+      }
+
+      .shell {
+        width: min(980px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 28px 0 40px;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 24px;
+        align-items: stretch;
+      }
+
+      .panel {
+        background: rgba(255, 250, 245, 0.78);
+        border: 1px solid rgba(31, 26, 24, 0.08);
+        border-radius: 30px;
+        box-shadow: 0 18px 40px rgba(76, 48, 37, 0.08);
+        backdrop-filter: blur(10px);
+      }
+
+      .hero-copy {
+        padding: 30px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.72);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--leaf);
+        box-shadow: 0 0 0 6px rgba(16, 108, 97, 0.12);
+      }
+
+      h1 {
+        margin: 18px 0 10px;
+        font-size: clamp(34px, 5vw, 62px);
+        line-height: 0.95;
+        letter-spacing: -0.05em;
+      }
+
+      .lead {
+        margin: 0;
+        font-size: 18px;
+        line-height: 1.55;
+        color: rgba(31, 26, 24, 0.8);
+      }
+
+      .mini-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 22px;
+      }
+
+      .mini-card {
+        padding: 16px;
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.7);
+      }
+
+      .mini-card strong {
+        display: block;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: rgba(31, 26, 24, 0.55);
+      }
+
+      .mini-card span {
+        display: block;
+        margin-top: 8px;
+        font-size: 26px;
+        font-weight: 800;
+      }
+
+      .hero-orb {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+
+      .orb-wrap {
+        position: relative;
+        width: min(320px, 72vw);
+        aspect-ratio: 1;
+        display: grid;
+        place-items: center;
+      }
+
+      .orb-back {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: radial-gradient(circle, #ffd8b0 0%, #e9683f 72%, #c64a26 100%);
+        box-shadow: 0 28px 60px rgba(233, 104, 63, 0.26);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+      }
+
+      .orb-back.active {
+        transform: scale(1.06);
+        box-shadow: 0 30px 70px rgba(233, 104, 63, 0.4);
+      }
+
+      .orb-back.active::after {
+        content: "";
+        position: absolute;
+        inset: -18px;
+        border-radius: 50%;
+        border: 2px solid rgba(233, 104, 63, 0.24);
+        animation: pulse 1.5s infinite;
+      }
+
+      .orb-core {
+        position: relative;
+        width: 62%;
+        aspect-ratio: 1;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 80px;
+        color: var(--ink);
+        background: rgba(255, 250, 245, 0.86);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        transition: transform 0.2s ease, background 0.2s ease;
+      }
+
+      .orb-core:hover {
+        transform: scale(1.03);
+      }
+
+      .orb-core:disabled {
+        cursor: wait;
+      }
+
+      .status-strip {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 24px;
+      }
+
+      .status-box,
+      .result-box {
+        padding: 18px 20px;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.72);
+      }
+
+      .status-box strong,
+      .result-box strong {
+        display: block;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: rgba(31, 26, 24, 0.55);
+      }
+
+      .status-box span,
+      .result-box span {
+        display: block;
+        margin-top: 8px;
+        font-size: 20px;
+        font-weight: 800;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 24px;
+        margin-top: 24px;
+      }
+
+      .card {
+        padding: 26px;
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+        font-size: 26px;
+      }
+
+      .card p {
+        margin: 0;
+        line-height: 1.55;
+        color: rgba(31, 26, 24, 0.76);
+      }
+
+      .timeline {
+        margin-top: 22px;
+        display: grid;
+        gap: 14px;
+      }
+
+      .timeline-item {
+        display: grid;
+        grid-template-columns: 36px 1fr;
+        gap: 12px;
+        align-items: start;
+      }
+
+      .timeline-item i {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-style: normal;
+        font-weight: 900;
+        color: white;
+        background: var(--ink);
+      }
+
+      .timeline-item strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .result-box {
+        margin-top: 18px;
+      }
+
+      .result-box .value {
+        font-size: 30px;
+        line-height: 1.05;
+      }
+
+      .artist {
+        margin-top: 8px;
+        font-size: 20px;
+        color: rgba(31, 26, 24, 0.72);
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      .chip {
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: #ddf1ea;
+        color: #0c544a;
+        font-weight: 700;
+      }
+
+      .message {
+        margin-top: 18px;
+        padding: 16px 18px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.68);
+        line-height: 1.5;
+      }
+
+      .message.error {
+        color: var(--danger);
+        background: rgba(180, 35, 24, 0.08);
+      }
+
+      .message.success {
+        color: var(--leaf);
+        background: rgba(16, 108, 97, 0.08);
+      }
+
+      .secondary {
+        margin-top: 20px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .secondary button {
+        border: none;
+        border-radius: 999px;
+        padding: 12px 18px;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 700;
+        background: var(--ink);
+        color: white;
+      }
+
+      .secondary button.alt {
+        background: white;
+        color: var(--ink);
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(0.92);
+          opacity: 0.95;
+        }
+        70% {
+          transform: scale(1.08);
+          opacity: 0;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
+
+      @media (max-width: 860px) {
+        .hero,
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .status-strip {
+          grid-template-columns: 1fr;
+        }
+
+        .shell {
+          padding-top: 18px;
+        }
+
+        .hero-copy,
+        .card {
+          padding: 22px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <article class="panel hero-copy">
+          <div class="eyebrow">
+            <span class="dot" id="health-dot"></span>
+            <span id="health-label">API kontrol ediliyor</span>
+          </div>
+          <h1>Sondra Mic App</h1>
+          <p class="lead">
+            Uygulamayi ac, mikrofona bas, 12 saniye boyunca sesi topla ve dogrudan
+            backend API'ye gonder. Dosya secme yok, yukleme yok, sadece kayit ve
+            eslestirme var.
+          </p>
+          <div class="mini-grid">
+            <div class="mini-card">
+              <strong>Kayit Suresi</strong>
+              <span>12 sn</span>
+            </div>
+            <div class="mini-card">
+              <strong>Akis</strong>
+              <span>Mic - API</span>
+            </div>
+          </div>
+        </article>
+        <aside class="panel hero-orb">
+          <div class="orb-wrap">
+            <div class="orb-back" id="orb-back"></div>
+            <button class="orb-core" id="mic-button" aria-label="Mikrofonu baslat">
+              Mic
+            </button>
+          </div>
+        </aside>
+      </section>
+
+      <section class="status-strip">
+        <div class="status-box panel">
+          <strong>Durum</strong>
+          <span id="state-label">Hazir</span>
+        </div>
+        <div class="status-box panel">
+          <strong>Sure</strong>
+          <span id="timer-label">0.0 sn</span>
+        </div>
+        <div class="status-box panel">
+          <strong>Son Islem</strong>
+          <span id="last-action">Beklemede</span>
+        </div>
+      </section>
+
+      <section class="layout">
+        <article class="panel card">
+          <h2>Nasil Calisir</h2>
+          <p>
+            Mic dugmesine bastiginda tarayici mikrofon izni ister. Kayit otomatik
+            baslar, ses WAV olarak hazirlanir ve `/api/match` endpoint'ine
+            gonderilir. Backend mevcut fingerprint mantiginla eslestirip sonucu geri
+            doner.
+          </p>
+          <div class="timeline">
+            <div class="timeline-item">
+              <i>1</i>
+              <div>
+                <strong>Mikrofon acilir</strong>
+                <span>Tarayici uzerinden canli ses toplanir.</span>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <i>2</i>
+              <div>
+                <strong>API'ye gonderilir</strong>
+                <span>Ses arka planda dosya secmeden backend'e gider.</span>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <i>3</i>
+              <div>
+                <strong>Eslesme gosterilir</strong>
+                <span>Baslik, sanatci ve skor kart olarak gorunur.</span>
+              </div>
+            </div>
+          </div>
+          <div class="secondary">
+            <button id="ping-button" type="button">Saglik Kontrolu</button>
+            <button id="reset-button" class="alt" type="button">Sonucu Temizle</button>
+          </div>
+          <div class="message" id="info-box">
+            Mikrofona bastiginda kayit baslayacak.
+          </div>
+        </article>
+
+        <article class="panel card">
+          <h2>Eslesme Sonucu</h2>
+          <p>
+            Backend cevabi burada gosterilir. Sarki bulunamazsa ya da bir hata olursa
+            ayni kutuda goreceksin.
+          </p>
+          <div class="result-box">
+            <strong>Parca</strong>
+            <span class="value" id="song-title">Henuz aranmadi</span>
+            <div class="artist" id="song-artist">Sonuc bekleniyor</div>
+            <div class="chips">
+              <div class="chip" id="song-score">score: -</div>
+              <div class="chip" id="song-id">song_id: -</div>
+            </div>
+          </div>
+          <div class="message" id="result-message">
+            Mic butonuna bas ve backend cevabini burada gor.
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <script>
+      const MAX_RECORDING_MS = 12000;
+      const micButton = document.getElementById("mic-button");
+      const pingButton = document.getElementById("ping-button");
+      const resetButton = document.getElementById("reset-button");
+      const orbBack = document.getElementById("orb-back");
+      const stateLabel = document.getElementById("state-label");
+      const timerLabel = document.getElementById("timer-label");
+      const lastAction = document.getElementById("last-action");
+      const infoBox = document.getElementById("info-box");
+      const resultMessage = document.getElementById("result-message");
+      const songTitle = document.getElementById("song-title");
+      const songArtist = document.getElementById("song-artist");
+      const songScore = document.getElementById("song-score");
+      const songId = document.getElementById("song-id");
+      const healthDot = document.getElementById("health-dot");
+      const healthLabel = document.getElementById("health-label");
+
+      let audioContext;
+      let mediaStream;
+      let sourceNode;
+      let processorNode;
+      let recordingChunks = [];
+      let recordingStartedAt = 0;
+      let timerInterval;
+      let stopTimeout;
+      let isRecording = false;
+
+      function setMessage(target, text, tone = "") {
+        target.textContent = text;
+        target.className = `message ${tone}`.trim();
+      }
+
+      function setState(text) {
+        stateLabel.textContent = text;
+      }
+
+      function resetResult() {
+        songTitle.textContent = "Henuz aranmadi";
+        songArtist.textContent = "Sonuc bekleniyor";
+        songScore.textContent = "score: -";
+        songId.textContent = "song_id: -";
+        setMessage(resultMessage, "Mic butonuna bas ve backend cevabini burada gor.");
+      }
+
+      async function pingHealth() {
+        healthLabel.textContent = "API kontrol ediliyor";
+        healthDot.style.background = "#d4d4d8";
+
+        try {
+          const response = await fetch("/api/health");
+          const data = await response.json();
+          healthDot.style.background = "#106c61";
+          healthLabel.textContent = data.status === "ok" ? "API hazir" : "API belirsiz";
+        } catch (error) {
+          healthDot.style.background = "#b42318";
+          healthLabel.textContent = "API erisilemiyor";
+        }
+      }
+
+      function mergeChunks(chunks) {
+        const totalLength = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
+        const merged = new Float32Array(totalLength);
+        let offset = 0;
+
+        for (const chunk of chunks) {
+          merged.set(chunk, offset);
+          offset += chunk.length;
+        }
+
+        return merged;
+      }
+
+      function encodeWav(samples, sampleRate) {
+        const buffer = new ArrayBuffer(44 + samples.length * 2);
+        const view = new DataView(buffer);
+
+        function writeString(offset, value) {
+          for (let i = 0; i < value.length; i += 1) {
+            view.setUint8(offset + i, value.charCodeAt(i));
+          }
+        }
+
+        writeString(0, "RIFF");
+        view.setUint32(4, 36 + samples.length * 2, true);
+        writeString(8, "WAVE");
+        writeString(12, "fmt ");
+        view.setUint32(16, 16, true);
+        view.setUint16(20, 1, true);
+        view.setUint16(22, 1, true);
+        view.setUint32(24, sampleRate, true);
+        view.setUint32(28, sampleRate * 2, true);
+        view.setUint16(32, 2, true);
+        view.setUint16(34, 16, true);
+        writeString(36, "data");
+        view.setUint32(40, samples.length * 2, true);
+
+        let offset = 44;
+        for (let i = 0; i < samples.length; i += 1) {
+          const sample = Math.max(-1, Math.min(1, samples[i]));
+          view.setInt16(
+            offset,
+            sample < 0 ? sample * 0x8000 : sample * 0x7fff,
+            true
+          );
+          offset += 2;
+        }
+
+        return new Blob([buffer], { type: "audio/wav" });
+      }
+
+      async function sendRecording(blob) {
+        const formData = new FormData();
+        formData.append("audio", blob, "mic_capture.wav");
+
+        setState("Araniyor");
+        lastAction.textContent = "API'ye gonderildi";
+        setMessage(infoBox, "Kayit tamamlandi, backend eslestirme yapiyor.");
+
+        const response = await fetch("/api/match", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.detail || "API sarki eslestirmesini tamamlayamadi.");
+        }
+
+        if (data.found) {
+          songTitle.textContent = data.title || "Bilinmeyen Baslik";
+          songArtist.textContent = data.artist || "Bilinmeyen Sanatci";
+          songScore.textContent = `score: ${data.score ?? 0}`;
+          songId.textContent = `song_id: ${data.song_id ?? "-"}`;
+          setMessage(resultMessage, data.message || "Sarki bulundu.", "success");
+          setState("Bulundu");
+          lastAction.textContent = "Eslesme alindi";
+        } else {
+          songTitle.textContent = "Sonuc bulunamadi";
+          songArtist.textContent = "Veritabani eslesmesi cikmadi";
+          songScore.textContent = `score: ${data.score ?? 0}`;
+          songId.textContent = "song_id: -";
+          setMessage(resultMessage, data.message || "Eslesme bulunamadi.");
+          setState("Bulunamadi");
+          lastAction.textContent = "Eslesme yok";
+        }
+      }
+
+      async function cleanupRecording() {
+        clearInterval(timerInterval);
+        clearTimeout(stopTimeout);
+        timerLabel.textContent = "0.0 sn";
+
+        if (processorNode) {
+          processorNode.disconnect();
+          processorNode.onaudioprocess = null;
+          processorNode = null;
+        }
+
+        if (sourceNode) {
+          sourceNode.disconnect();
+          sourceNode = null;
+        }
+
+        if (mediaStream) {
+          mediaStream.getTracks().forEach((track) => track.stop());
+          mediaStream = null;
+        }
+
+        if (audioContext) {
+          await audioContext.close();
+          audioContext = null;
+        }
+
+        isRecording = false;
+        micButton.disabled = false;
+        micButton.textContent = "Mic";
+        orbBack.classList.remove("active");
+      }
+
+      async function stopRecordingAndSend() {
+        if (!isRecording) {
+          return;
+        }
+
+        const merged = mergeChunks(recordingChunks);
+        const sampleRate = audioContext.sampleRate;
+        await cleanupRecording();
+        const wavBlob = encodeWav(merged, sampleRate);
+        recordingChunks = [];
+        await sendRecording(wavBlob);
+      }
+
+      async function startRecording() {
+        if (isRecording) {
+          return;
+        }
+
+        resetResult();
+        recordingChunks = [];
+        setState("Dinleniyor");
+        lastAction.textContent = "Mikrofon acildi";
+        setMessage(infoBox, "Kayit aliniyor. 12 saniye sonra otomatik gonderilecek.", "success");
+
+        try {
+          mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          sourceNode = audioContext.createMediaStreamSource(mediaStream);
+          processorNode = audioContext.createScriptProcessor(4096, 1, 1);
+
+          processorNode.onaudioprocess = (event) => {
+            if (!isRecording) {
+              return;
+            }
+
+            const channel = event.inputBuffer.getChannelData(0);
+            recordingChunks.push(new Float32Array(channel));
+          };
+
+          sourceNode.connect(processorNode);
+          processorNode.connect(audioContext.destination);
+
+          isRecording = true;
+          micButton.disabled = false;
+          micButton.textContent = "Stop";
+          orbBack.classList.add("active");
+          recordingStartedAt = performance.now();
+
+          timerInterval = setInterval(() => {
+            const elapsed = (performance.now() - recordingStartedAt) / 1000;
+            timerLabel.textContent = `${elapsed.toFixed(1)} sn`;
+          }, 100);
+
+          stopTimeout = setTimeout(() => {
+            stopRecordingAndSend().catch(handleError);
+          }, MAX_RECORDING_MS);
+        } catch (error) {
+          await cleanupRecording();
+          throw error;
+        }
+      }
+
+      async function toggleMic() {
+        micButton.disabled = true;
+
+        try {
+          if (isRecording) {
+            await stopRecordingAndSend();
+          } else {
+            await startRecording();
+          }
+        } catch (error) {
+          handleError(error);
+        } finally {
+          if (!isRecording) {
+            micButton.disabled = false;
+          }
+        }
+      }
+
+      function handleError(error) {
+        console.error(error);
+        setState("Hata");
+        lastAction.textContent = "Islem basarisiz";
+        setMessage(
+          infoBox,
+          error.message || "Mikrofon veya API tarafinda hata olustu.",
+          "error"
+        );
+        setMessage(
+          resultMessage,
+          error.message || "Backend cevabi alinamadi.",
+          "error"
+        );
+        cleanupRecording().catch(() => {});
+      }
+
+      micButton.addEventListener("click", () => {
+        toggleMic();
+      });
+
+      pingButton.addEventListener("click", () => {
+        pingHealth();
+      });
+
+      resetButton.addEventListener("click", () => {
+        resetResult();
+        setState("Hazir");
+        lastAction.textContent = "Beklemede";
+        setMessage(infoBox, "Mikrofona bastiginda kayit baslayacak.");
+      });
+
+      pingHealth();
+      resetResult();
+    </script>
+  </body>
+</html>
