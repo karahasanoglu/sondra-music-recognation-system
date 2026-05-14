@@ -90,5 +90,10 @@ flutter run
 ## 🧠 Nasıl Çalışır
 Sondra, ham sesi bir spektrograma dönüştürür, takım yıldızı noktalarını (genlikteki zirveler) bulur ve bu noktaların hash'lenmiş çiftlerini oluşturur. Bu hash'ler (parmak izleri) arka plan gürültüsüne ve ufak zaman değişimlerine karşı oldukça dirençlidir ve motorun PostgreSQL'deki milyonlarca hash'i hızla aramasına olanak tanır.
 
+## 👨‍💻 Geliştiriciler
+
+* **Emir Furkan:** Veri setinin oluşturulması ve backend tarafında şarkı eşleştirme algoritmalarının geliştirilmesi.
+* **Onur Nural:** Flutter tabanlı arayüzün kodlanması ve sistemin mobil ortama entegrasyonu.
+
 ---
 *Sondra Ekibi tarafından ❤️ ile geliştirildi.*
