@@ -1,8 +1,5 @@
-<div align="center">
-  <img src="./logo_icon/sondra_logo.png" alt="Sondra Logo" width="200"/>
-  <h1>Sondra — Müzik Tanıma Sistemi</h1>
-  <p>Müziği saniyeler içinde tanımlamak için tasarlanmış, yüksek performanslı, açık kaynaklı bir ses tanıma motoru.</p>
-</div>
+# Sondra — Müzik Tanıma Sistemi
+Müziği saniyeler içinde tanımlamak için tasarlanmış, yüksek performanslı, açık kaynaklı bir ses tanıma motoru.
 
 ---
 
